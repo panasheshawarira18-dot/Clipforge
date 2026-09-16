@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClipForge — AI Short Video Creator</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial;background:#0b0b0f;color:#f7f7f8}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.app{display:flex;min-height:100vh}
+.sidebar{width:230px;border-right:1px solid #24242c;padding:22px 14px;background:#101015}
+.logo{font-size:21px;font-weight:800;padding:8px 10px 24px}.logo span{color:#9b7cff}
+.nav button{width:100%;background:none;border:0;color:#aaa;text-align:left;padding:12px;border-radius:10px;margin:2px 0}.nav button:hover,.nav .active{background:#1c1b25;color:#fff}
+.main{flex:1;padding:28px;max-width:1200px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+h1{font-size:30px;margin:0 0 6px}.muted{color:#92929d}.card{background:#14141b;border:1px solid #262630;border-radius:16px;padding:20px;margin-bottom:18px}
+textarea,input,select{width:100%;background:#0d0d12;border:1px solid #30303a;color:#fff;border-radius:10px;padding:12px;outline:none}
+textarea{min-height:125px;resize:vertical}.row{display:grid;grid-template-columns:2fr 1fr;gap:18px}.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.primary{background:#8b5cf6;color:white;border:0;border-radius:10px;padding:12px 17px;font-weight:700}.secondary{background:#22222b;color:#fff;border:1px solid #33333e;border-radius:10px;padding:11px 15px}
+label{font-size:12px;color:#aaa;display:block;margin:0 0 7px}.field{margin-top:14px}
+.progress{height:8px;background:#292933;border-radius:99px;overflow:hidden}.bar{height:100%;width:0;background:#8b5cf6;transition:width .4s}
+.preview{aspect-ratio:9/16;max-height:560px;background:linear-gradient(160deg,#28203e,#101014);border-radius:14px;display:flex;align-items:flex-end;padding:22px;position:relative;overflow:hidden}
+.preview:before{content:"AI VIDEO PREVIEW";position:absolute;top:20px;left:20px;font-size:11px;color:#aaa}.caption{font-size:22px;font-weight:800;text-align:center;width:100%;text-shadow:0 2px 8px #000}
+.timeline{height:85px;background:#0d0d12;border:1px solid #292933;border-radius:10px;margin-top:15px;padding:12px}.track{height:18px;background:#252531;border-radius:5px;margin:8px 0}.clip{height:100%;width:35%;background:#8b5cf6;border-radius:5px}.tools{display:flex;gap:8px;flex-wrap:wrap}
+.status{margin-top:12px;color:#a7f3d0;font-size:13px}.hidden{display:none}
+@media(max-width:800px){.sidebar{width:70px}.logo{font-size:0}.logo:after{content:"CF";font-size:18px}.nav button{font-size:0}.nav button:before{content:"•";font-size:22px}.main{padding:18px}.row{grid-template-columns:1fr}.controls{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="logo">Clip<span>Forge</span></div>
+  <div class="nav">
+    <button class="active" onclick="show('create',this)">＋ Create</button>
+    <button onclick="show('projects',this)">▣ Projects</button>
+    <button onclick="show('clips',this)">✂ Auto Clips</button>
+    <button onclick="show('voice',this)">◉ Voiceover</button>
+    <button onclick="show('settings',this)">⚙ Settings</button>
+  </div>
+</aside>
+<main class="main">
+<section id="create">
+<div class="top"><div><h1>Create a short video</h1><div class="muted">Turn an idea or script into a social-ready video.</div></div><button class="secondary" onclick="alert('Prototype: sign-in can be connected to your backend.')">Sign in</button></div>
+<div class="row">
+<div>
+<div class="card">
+<label>VIDEO IDEA OR SCRIPT</label>
+<textarea id="idea" placeholder="Example: Create a 30-second motivational story about never giving up..."></textarea>
+<div class="controls">
+<div class="field"><label>FORMAT</label><select id="format"><option>9:16 Shorts / Reels / TikTok</option><option>16:9 YouTube</option><option>1:1 Square</option></select></div>
+<div class="field"><label>VOICE</label><select><option>Warm narrator</option><option>Energetic</option><option>Calm</option></select></div>
+<div class="field"><label>STYLE</label><select><option>Cinematic</option><option>Gaming</option><option>Story</option><option>Educational</option></select></div>
+</div>
+<div style="display:flex;gap:9px;margin-top:18px"><button class="primary" onclick="generate()">✨ Generate video</button><button class="secondary" onclick="makeScript()">Generate script</button></div>
+<div id="status" class="status hidden"></div><div style="margin-top:14px" class="progress"><div id="bar" class="bar"></div></div>
+</div>
+<div class="card"><b>AI production tools</b><div class="tools" style="margin-top:13px">
+<button class="secondary" onclick="toast('Auto captions enabled')">Captions</button>
+<button class="secondary" onclick="toast('Split-screen layout selected')">Split screen</button>
+<button class="secondary" onclick="toast('Highlight detection queued')">Auto highlights</button>
+<button class="secondary" onclick="toast('Thumbnail generator opened')">Thumbnail</button>
+</div></div>
+</div>
+<div>
+<div class="card"><div class="preview"><div class="caption" id="caption">Your generated video appears here</div></div>
+<div class="timeline"><small class="muted">Timeline</small><div class="track"><div class="clip"></div></div><div class="muted" style="font-size:11px">Scene 1 · Voice · Captions · Music</div></div>
+<div style="display:flex;gap:9px;margin-top:12px"><button class="primary" onclick="exportVideo()">Export MP4</button><button class="secondary" onclick="toast('Project saved')">Save project</button></div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="projects" class="hidden"><h1>Projects</h1><p class="muted">Your saved video projects will appear here.</p><div class="card">No projects yet. Create your first short video.</div></section>
+<section id="clips" class="hidden"><h1>Auto Clips</h1><p class="muted">Upload a long video in the production version and AI can detect highlights.</p><div class="card"><input type="file" accept="video/*"><br><button class="primary" style="margin-top:12px" onclick="toast('Highlight scan queued in this prototype')">Scan for highlights</button></div></section>
+<section id="voice" class="hidden"><h1>AI Voiceover</h1><p class="muted">Choose a voice and generate narration from your script.</p><div class="card"><textarea placeholder="Paste narration here..."></textarea><button class="primary" style="margin-top:12px" onclick="toast('Voice generation queued')">Generate voiceover</button></div></section>
+<section id="settings" class="hidden"><h1>Settings</h1><div class="card"><label>Brand name</label><input value="ClipForge"><div class="field"><label>Default export</label><select><option>1080 × 1920</option><option>1920 × 1080</option></select></div></div></section>
+</main></div>
+<script>
+function show(id,btn){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+function toast(x){let s=document.getElementById('status');s.textContent='✓ '+x;s.classList.remove('hidden');setTimeout(()=>s.classList.add('hidden'),2200)}
+function makeScript(){let t=document.getElementById('idea');if(!t.value.trim())t.value='The world can change in one day. Keep going when nobody is watching. Small steps become big results. Your future self will thank you for not giving up.';toast('Starter script created')}
+function generate(){let idea=document.getElementById('idea').value.trim()||'Create an inspiring short video about chasing your goals.';let bar=document.getElementById('bar'),s=document.getElementById('status');let cap=document.getElementById('caption');s.classList.remove('hidden');let n=0;let steps=['Writing scenes…','Generating visuals…','Creating voiceover…','Syncing captions…','Finishing edit…'];let timer=setInterval(()=>{n++;bar.style.width=(n*20)+'%';s.textContent='⏳ '+steps[n-1];if(n===5){clearInterval(timer);s.textContent='✓ Video ready — review the preview or export it.';cap.textContent=idea.slice(0,110);}},500)}
+function exportVideo(){toast('Export started — connect a video rendering API for real MP4 output')}
+</script>
+</body>
+</html>
