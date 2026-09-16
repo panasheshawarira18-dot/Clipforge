@@ -1,0 +1,2 @@
+# Clipforge
+To help people 
